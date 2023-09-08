@@ -4,5 +4,4 @@ redis/
 
 .env
 
-seeder.js
 data.json
