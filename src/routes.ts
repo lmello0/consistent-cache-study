@@ -19,7 +19,7 @@ router.put('/person/:email', (req: Request, res: Response) => {
   return personController.updatePerson(req, res);
 });
 
-router.delete('/person/:email', (req: Request, res: Response) => {
+router.delete('/person/:customer/:email', (req: Request, res: Response) => {
   return personController.deletePerson(req, res);
 });
 

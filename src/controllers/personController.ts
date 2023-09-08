@@ -73,17 +73,13 @@ export class PersonController {
 
   async createPerson(req: Request, res: Response) {
     try {
-      const { customer, firstName, lastName, age, email, address, phone } =
-        req.body;
+      const newData = { ...req.body };
 
-      const person = await this.createPersonService.execute({
-        customer,
-        firstName,
-        lastName,
-        age,
-        email,
-        address,
-        phone,
+      const person = await this.createPersonService.execute(newData);
+
+      this.cache.updateCache(newData.customer, newData.email, {
+        originalUrl: req.originalUrl,
+        person: newData,
       });
 
       return res.json(person);
@@ -95,20 +91,16 @@ export class PersonController {
   async updatePerson(req: Request, res: Response) {
     try {
       const emailId = req.params.email;
-      const { customer, firstName, lastName, age, email, address, phone } =
-        req.body;
+      const newData = { ...req.body };
 
       const person = await this.updatePersonService.execute({
         email: emailId,
-        newData: {
-          customer,
-          firstName,
-          lastName,
-          age,
-          email: email,
-          address,
-          phone,
-        },
+        newData,
+      });
+
+      this.cache.updateCache(newData.customer, emailId, {
+        originalUrl: req.originalUrl,
+        person: newData,
       });
 
       return res.json(person);
@@ -119,9 +111,11 @@ export class PersonController {
 
   async deletePerson(req: Request, res: Response) {
     try {
-      const { email } = req.params;
+      const { customer, email } = req.params;
 
       const status = await this.deletePersonService.execute({ email });
+
+      this.cache.updateCache(customer, email, { originalUrl: req.originalUrl });
 
       return res.json(status);
     } catch (err) {

@@ -1,7 +1,7 @@
 export type AddressTypeType = 'Home Address' | 'Business Address';
 
 export interface AddressInterface {
-  number: string;
+  number: number;
   street: string;
   city: string;
   state: string;
