@@ -1,5 +1,6 @@
 import { CreatePersonDTO } from '../dtos/CreatePersonDTO';
 import { DeletePersonDTO } from '../dtos/DeletePersonDTO';
+import { GetPersonDTO } from '../dtos/GetPersonDTO';
 import { UpdatePersonDTO } from '../dtos/UpdatePersonDTO';
 import { NotFoundException } from '../exceptions/NotFound';
 import { PersonInterface } from '../interfaces/IPerson';
@@ -11,8 +12,14 @@ export class MongoRepository implements MongoRepositoryProtocol {
     return await Person.find();
   }
 
-  async findOne(email: string): Promise<null | PersonInterface> {
-    return await Person.findOne({ email });
+  async findOne(data: GetPersonDTO): Promise<null | PersonInterface> {
+    const person = await Person.findOne({ email: data.email });
+
+    if (!person) {
+      throw new NotFoundException();
+    }
+
+    return person;
   }
 
   async create(data: CreatePersonDTO): Promise<PersonInterface> {
@@ -31,7 +38,7 @@ export class MongoRepository implements MongoRepositoryProtocol {
     );
 
     if (!person) {
-      throw new NotFoundException('Person with the given email not found!');
+      throw new NotFoundException();
     }
 
     await person.save();
@@ -43,7 +50,7 @@ export class MongoRepository implements MongoRepositoryProtocol {
     const person = await Person.findOneAndDelete({ email: data.email });
 
     if (!person) {
-      throw new NotFoundException('Person with the given email not found!');
+      throw new NotFoundException();
     }
 
     return `${data.email} deleted!`;

@@ -1,5 +1,5 @@
 export class NotFoundException extends Error {
-  constructor(message: string) {
-    super(message);
+  constructor() {
+    super('Person with the given email not found');
   }
 }
