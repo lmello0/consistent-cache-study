@@ -43,7 +43,7 @@ export class PersonController {
 
       const person = await this.getPersonService.execute({ email });
 
-      return person;
+      return res.json(person);
     } catch (err) {
       this.handleException(err, res);
     }

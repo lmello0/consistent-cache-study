@@ -9,11 +9,11 @@ import { MongoRepositoryProtocol } from './MongoRepositoryProtocol';
 
 export class MongoRepository implements MongoRepositoryProtocol {
   async findAll(): Promise<PersonInterface[]> {
-    return await Person.find();
+    return await Person.find().select('-_id');
   }
 
   async findOne(data: GetPersonDTO): Promise<null | PersonInterface> {
-    const person = await Person.findOne({ email: data.email });
+    const person = await Person.findOne({ email: data.email }).select('-_id');
 
     if (!person) {
       throw new NotFoundException();
