@@ -3,6 +3,7 @@ import { PersonInterface } from '../interfaces/IPerson';
 import { addressSchema } from './addressSchema';
 
 const personSchema = new mongoose.Schema<PersonInterface>({
+  customer: { type: String, required: true },
   firstName: { type: String, required: true },
   lastName: { type: String },
   age: { type: Number, required: true },

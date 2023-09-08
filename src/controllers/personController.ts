@@ -19,6 +19,8 @@ export class PersonController {
     if (err instanceof NotFoundException) {
       return res.status(404).json({ error: err.message });
     } else {
+      console.error(err);
+
       return res.status(500).json({ error: 'Unexpected error' });
     }
   }
@@ -49,9 +51,11 @@ export class PersonController {
 
   async createPerson(req: Request, res: Response) {
     try {
-      const { firstName, lastName, age, email, address, phone } = req.body;
+      const { customer, firstName, lastName, age, email, address, phone } =
+        req.body;
 
       const person = await this.createPersonService.execute({
+        customer,
         firstName,
         lastName,
         age,
@@ -69,11 +73,20 @@ export class PersonController {
   async updatePerson(req: Request, res: Response) {
     try {
       const emailId = req.params.email;
-      const { firstName, lastName, age, email, address, phone } = req.body;
+      const { customer, firstName, lastName, age, email, address, phone } =
+        req.body;
 
       const person = await this.updatePersonService.execute({
         email: emailId,
-        newData: { firstName, lastName, age, email: email, address, phone },
+        newData: {
+          customer,
+          firstName,
+          lastName,
+          age,
+          email: email,
+          address,
+          phone,
+        },
       });
 
       return res.json(person);
