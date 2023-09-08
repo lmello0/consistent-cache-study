@@ -10,6 +10,6 @@ export async function run() {
   } catch (err) {
     console.error(err);
 
-    process.exit(1);
+    throw err;
   }
 }
