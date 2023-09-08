@@ -3,14 +3,25 @@ import { GetAllPersonService } from '../services/GetAllPersonService';
 import { CreatePersonService } from '../services/CreatePersonService';
 import { UpdatePersonService } from '../services/UpdatePersonService';
 import { DeletePersonService } from '../services/DeletePersonService';
+import { GetPersonService } from '../services/GetPersonService';
+import { NotFoundException } from '../exceptions/NotFound';
 
 export class PersonController {
   constructor(
     private readonly getAllPersonService: GetAllPersonService,
+    private readonly getPersonService: GetPersonService,
     private readonly createPersonService: CreatePersonService,
     private readonly updatePersonService: UpdatePersonService,
     private readonly deletePersonService: DeletePersonService,
   ) {}
+
+  private handleException(err: unknown, res: Response) {
+    if (err instanceof NotFoundException) {
+      return res.status(404).json({ error: err.message });
+    } else {
+      return res.status(500).json({ error: 'Unexpected error' });
+    }
+  }
 
   async getPeople(req: Request, res: Response) {
     try {
@@ -21,6 +32,18 @@ export class PersonController {
       console.error(err);
 
       return res.status(500).json({ error: 'Unexpected error' });
+    }
+  }
+
+  async getPerson(req: Request, res: Response) {
+    try {
+      const { email } = req.params;
+
+      const person = await this.getPersonService.execute({ email });
+
+      return person;
+    } catch (err) {
+      this.handleException(err, res);
     }
   }
 
@@ -39,9 +62,7 @@ export class PersonController {
 
       return res.json(person);
     } catch (err) {
-      console.error(err);
-
-      return res.status(500).json({ error: 'Unexpected error' });
+      this.handleException(err, res);
     }
   }
 
@@ -57,9 +78,7 @@ export class PersonController {
 
       return res.json(person);
     } catch (err) {
-      console.error(err);
-
-      return res.status(500).json({ error: 'Unexpected error' });
+      this.handleException(err, res);
     }
   }
 
@@ -71,9 +90,7 @@ export class PersonController {
 
       return res.json(status);
     } catch (err) {
-      console.error(err);
-
-      return res.status(500).json({ error: 'Unexpected error' });
+      this.handleException(err, res);
     }
   }
 }
