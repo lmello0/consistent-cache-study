@@ -22,7 +22,10 @@ export class MongoRepository implements MongoRepositoryProtocol {
   }
 
   async findOne(data: GetPersonDTO): Promise<null | PersonInterface> {
-    const person = await Person.findOne({ email: data.email }).select('-_id');
+    const person = await Person.findOne({
+      customer: data.customer,
+      email: data.email,
+    }).select('-_id');
 
     if (!person) {
       throw new NotFoundException();

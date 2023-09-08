@@ -7,7 +7,7 @@ router.get('/people/:customer', (req: Request, res: Response) => {
   return personController.getPeople(req, res);
 });
 
-router.get('/person/:email', (req: Request, res: Response) => {
+router.get('/person/:customer/:email', (req: Request, res: Response) => {
   return personController.getPerson(req, res);
 });
 

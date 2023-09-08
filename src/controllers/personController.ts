@@ -5,6 +5,7 @@ import { UpdatePersonService } from '../services/UpdatePersonService';
 import { DeletePersonService } from '../services/DeletePersonService';
 import { GetPersonService } from '../services/GetPersonService';
 import { NotFoundException } from '../exceptions/NotFound';
+import { RedisRepositoryProtocol } from '../repositories/RedisRepositoryProtocol';
 
 export class PersonController {
   constructor(
@@ -13,6 +14,7 @@ export class PersonController {
     private readonly createPersonService: CreatePersonService,
     private readonly updatePersonService: UpdatePersonService,
     private readonly deletePersonService: DeletePersonService,
+    private readonly cache: RedisRepositoryProtocol,
   ) {}
 
   private handleException(err: unknown, res: Response) {
@@ -29,21 +31,39 @@ export class PersonController {
     try {
       const { customer } = req.params;
 
+      const key = `${customer}:${req.originalUrl}`;
+      const data = await this.cache.get(key);
+
+      if (data) {
+        return res.json(data);
+      }
+
       const people = await this.getAllPersonService.execute({ customer });
+
+      this.cache.store(key, people);
 
       return res.json(people);
     } catch (err) {
-      console.error(err);
-
-      return res.status(500).json({ error: 'Unexpected error' });
+      this.handleException(err, res);
     }
   }
 
   async getPerson(req: Request, res: Response) {
     try {
-      const { email } = req.params;
+      const { customer, email } = req.params;
 
-      const person = await this.getPersonService.execute({ email });
+      const key = `${customer}:${email}:${req.originalUrl}`;
+      const data = await this.cache.get(key);
+
+      if (data) {
+        return res.json(data);
+      }
+
+      const person = await this.getPersonService.execute({ customer, email });
+
+      if (person) {
+        this.cache.store(key, person);
+      }
 
       return res.json(person);
     } catch (err) {
