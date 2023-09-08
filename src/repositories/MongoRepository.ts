@@ -1,5 +1,6 @@
 import { CreatePersonDTO } from '../dtos/CreatePersonDTO';
 import { DeletePersonDTO } from '../dtos/DeletePersonDTO';
+import { GetPeopleDTO } from '../dtos/GetPeopleDTO';
 import { GetPersonDTO } from '../dtos/GetPersonDTO';
 import { UpdatePersonDTO } from '../dtos/UpdatePersonDTO';
 import { NotFoundException } from '../exceptions/NotFound';
@@ -8,8 +9,16 @@ import { Person } from '../models/Person';
 import { MongoRepositoryProtocol } from './MongoRepositoryProtocol';
 
 export class MongoRepository implements MongoRepositoryProtocol {
-  async findAll(): Promise<PersonInterface[]> {
-    return await Person.find().select('-_id');
+  async findAll(data: GetPeopleDTO): Promise<PersonInterface[]> {
+    const people = await Person.find({ customer: data.customer }).select(
+      '-_id',
+    );
+
+    if (!people) {
+      throw new NotFoundException();
+    }
+
+    return people;
   }
 
   async findOne(data: GetPersonDTO): Promise<null | PersonInterface> {

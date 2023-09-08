@@ -1,11 +1,12 @@
 import { CreatePersonDTO } from '../dtos/CreatePersonDTO';
 import { DeletePersonDTO } from '../dtos/DeletePersonDTO';
+import { GetPeopleDTO } from '../dtos/GetPeopleDTO';
 import { GetPersonDTO } from '../dtos/GetPersonDTO';
 import { UpdatePersonDTO } from '../dtos/UpdatePersonDTO';
 import { PersonInterface } from '../interfaces/IPerson';
 
 export interface MongoRepositoryProtocol {
-  findAll(): Promise<PersonInterface[]>;
+  findAll(data: GetPeopleDTO): Promise<PersonInterface[]>;
 
   findOne(data: GetPersonDTO): Promise<null | PersonInterface>;
 

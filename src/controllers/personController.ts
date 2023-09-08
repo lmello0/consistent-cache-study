@@ -27,7 +27,9 @@ export class PersonController {
 
   async getPeople(req: Request, res: Response) {
     try {
-      const people = await this.getAllPersonService.execute();
+      const { customer } = req.params;
+
+      const people = await this.getAllPersonService.execute({ customer });
 
       return res.json(people);
     } catch (err) {

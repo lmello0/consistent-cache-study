@@ -3,7 +3,7 @@ import { personController } from './controllers';
 
 const router = Router();
 
-router.get('/people', (req: Request, res: Response) => {
+router.get('/people/:customer', (req: Request, res: Response) => {
   return personController.getPeople(req, res);
 });
 
